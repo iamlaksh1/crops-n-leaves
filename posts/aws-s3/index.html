@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>How to create a vector-based web map hosted on GitHub | Lakshmanan Venkatesan</title>
+<meta name="keywords" content="data, geography">
+<meta name="description" content="This is the map we have created for the Urban Grammar AI project. It is created using open source software stack and hosted on GitHub, for free.
+This post will walk you through the whole process of generation of the map, step by step, so you can create your own. It is a bit longer than usual, so a quick outline for better orientation:
+By the end of this tutorial, you will be able to take your vector data and turn them into a fully-fledged vector map hosted on GitHub with no cost involved, for everyone to enjoy.">
+<meta name="author" content="">
+<link rel="canonical" href="https://iamlaksh1.github.io/crops-n-leaves/posts/aws-s3/">
+<link crossorigin="anonymous" href="/crops-n-leaves/assets/css/stylesheet.5cfc680b1eeaeef9efbced92d46c2a9e876b72ee14fba85846afc4cff9e6e6f8.css" integrity="sha256-XPxoCx7q7vnvvO2S1Gwqnodrcu4U&#43;6hYRq/Ez/nm5vg=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/crops-n-leaves/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://iamlaksh1.github.io/crops-n-leaves/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://iamlaksh1.github.io/crops-n-leaves/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://iamlaksh1.github.io/crops-n-leaves/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://iamlaksh1.github.io/crops-n-leaves/apple-touch-icon.png">
+<link rel="mask-icon" href="https://iamlaksh1.github.io/crops-n-leaves/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="How to create a vector-based web map hosted on GitHub" />
+<meta property="og:description" content="This is the map we have created for the Urban Grammar AI project. It is created using open source software stack and hosted on GitHub, for free.
+This post will walk you through the whole process of generation of the map, step by step, so you can create your own. It is a bit longer than usual, so a quick outline for better orientation:
+By the end of this tutorial, you will be able to take your vector data and turn them into a fully-fledged vector map hosted on GitHub with no cost involved, for everyone to enjoy." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://iamlaksh1.github.io/crops-n-leaves/posts/aws-s3/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-09-29T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="How to create a vector-based web map hosted on GitHub"/>
+<meta name="twitter:description" content="This is the map we have created for the Urban Grammar AI project. It is created using open source software stack and hosted on GitHub, for free.
+This post will walk you through the whole process of generation of the map, step by step, so you can create your own. It is a bit longer than usual, so a quick outline for better orientation:
+By the end of this tutorial, you will be able to take your vector data and turn them into a fully-fledged vector map hosted on GitHub with no cost involved, for everyone to enjoy."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://iamlaksh1.github.io/crops-n-leaves/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "How to create a vector-based web map hosted on GitHub",
+      "item": "https://iamlaksh1.github.io/crops-n-leaves/posts/aws-s3/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How to create a vector-based web map hosted on GitHub",
+  "name": "How to create a vector-based web map hosted on GitHub",
+  "description": "This is the map we have created for the Urban Grammar AI project. It is created using open source software stack and hosted on GitHub, for free.\nThis post will walk you through the whole process of generation of the map, step by step, so you can create your own. It is a bit longer than usual, so a quick outline for better orientation:\nBy the end of this tutorial, you will be able to take your vector data and turn them into a fully-fledged vector map hosted on GitHub with no cost involved, for everyone to enjoy.",
+  "keywords": [
+    "data", "geography"
+  ],
+  "articleBody": " This is the map we have created for the Urban Grammar AI project. It is created using open source software stack and hosted on GitHub, for free.\nThis post will walk you through the whole process of generation of the map, step by step, so you can create your own. It is a bit longer than usual, so a quick outline for better orientation:\nBy the end of this tutorial, you will be able to take your vector data and turn them into a fully-fledged vector map hosted on GitHub with no cost involved, for everyone to enjoy.\nVector tiles Web maps are (usually) based on tiles. That means that every dataset is turned into a large set of tiny squares representing small portions of the map. And if you want to zoom in and out, you need those tiles for every zoom level. So the first step in our process will be the creation of vector tiles.\nThe easiest option is to use tippecanoe, a tool created by Mapbox that allows you to create vector tiles from any GeoJSON input. You should export only the columns you need and make sure that the geometry is in EPSG:4326 projection (lat/long) - that is what tippecanoe expects. Something like this will do if you have your data in geopandas.GeoDataFrame:\ngdf[[\"signature_type\", \"geometry\"]].to_crs(4326).to_file( \"signatures_4326.geojson\" ) Now you have a signatures_4326.geojson with geometry and a column encoding the signature type. It means that it is time to use tippecanoe (check the installation instructions).\ntippecanoe is a command-line tool, so fire up your favourite terminal, or use it within a Jupyter notebook (as we did). There are some options to set but let’s talk about the most important ones (you can check the rest in the documentation).\nZoom levels Every map has a range of zoom levels at which the shown data is meaningful. If you’re comparing states, you don’t need to zoom to a level of a street, and if you’re showing building-level data, you don’t need a zoom to see the whole continent.\nZoom level 0 means you are zoomed out to see the whole world. It is a single tile. Zoom level 1 is a bit closer and is split into 4 tiles. Zoom level 2 has 16 tiles, level 3 has 64 and so on. Zoom level 16, which shows a street-level detail, consists of 4 294 967 296 tiles if you want to create them for the whole world. That is a lot of data, so you need to be mindful of which detail you actually need because the difference between zooming up to level 15 and up to level 16 is huge. OpenStreetMap has a nice guide on zoom levels if you are interested in more details.\nFor the signature geometry that represents neighbourhood-level classification, level 15 feels like the reasonable maximum, so you have the first option - -z15.\nTile format and compression In later steps, you will use the Leaflet.VectorGrid plugin to load the tiles. To make that work, you need them as uncompressed protobuf files (not Mapbox vector tiles), which gives you another two options - -no-tile-compression to control the compression and --output-to-directory telling tippecanoe to use directories, instead of mbtiles.\nWe have used a few more options, but you may not need those.\nGenerate tiles You have all you need to create the tiles:\ntippecanoe -z15 \\ --no-tile-compression \\ --output-to-directory=tiles/ \\ signatures_4326.geojson The command above sets the maximum zoom to 15 so you don’t create overly detailed tiles (z15), disables tile compression (--no-tile-compression) and saves the result to the tiles/ directory (--output-to-directory=tiles/), based on your GeoJSON file (signatures_4326.geojson).\nThis step may take a bit of time, but once it is done, you will see thousands of files in the tiles/ folder. It is time to show them on a map.\nLeaflet.js map One of the best tools for interactive maps is a leaflet.js, an open-source JavaScript library. With the right plugins, it is an ideal tool for almost any web map.\nThe whole map and a JavaScript code will be served from a single HTML file. Let’s start with some basic structure, with comments as a placeholder you will fill later:\n\u003c!DOCTYPE html\u003e \u003chtml\u003e \u003chead\u003e \u003ctitle\u003eSpatial Signatures in Great Britain\u003c/title\u003e \u003cmeta charset=\"utf-8\" /\u003e \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e \u003c/head\u003e \u003cbody style='margin:0'\u003e \u003c/body\u003e \u003c/html\u003e Load leaflet.js To load the leaflet.js, you need to get its source script and CSS styles. Both are usually fetched over the web. You can then replace with the following snippet:\n\u003clink rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.7.1/dist/leaflet.css\"/\u003e \u003cscript src=\"https://unpkg.com/leaflet@1.7.1/dist/leaflet.js\"\u003e\u003c/script\u003e However, the basic leaflet.js is not able to work with vector tiles, so you need to load a Leaflet.VectorGrid extension on top. Just add this to the snippet:\n\u003cscript src=\"https://unpkg.com/leaflet.vectorgrid@1.3.0/dist/Leaflet.VectorGrid.bundled.js\"\u003e\u003c/script\u003e At this moment, you have everything you need to create the map in your file.\nCreate the map You need two things - a div object where the map will live and a bit of JavaScript specifying what the map should do. The former is easy:\n\u003cdiv id=\"map\" style=\"width: 100vw; height: 100vh; background: #fdfdfd\"\u003e\u003c/div\u003e This div is empty, but the important bit is id=\"map\", which will link it to the JavaScript. It also has some basic styles ensuring that it covers the whole screen (width: 100vw; height: 100vh;) and has an almost-white background (background: #fdfdfd).\nThe second part is the actual JavaScript generating the map.\n\u003cscript\u003e // create map var map = L.map('map', { center: [53.4107, -2.9704], minZoom: 6, maxZoom: 15, zoomControl: true, zoom: 12, }); // other map specifications \u003c/script\u003e Let’s unpack this. This creates a variable called map (var map), which is a leaflet map object (L.map). The object is linked to the HTML element (in this case div) with the id map you created above (“map”). It also has a dictionary with some basic specification, that is setting the centre of the map to Liverpool (center: [53.4107, -2.9704] where the numbers are latitude and longitude), limiting zoom levels to 6-15 (minZoom: 6 and maxZoom: 15), turning on zoom control (+- buttons) (zoomControl: true) and setting the default zoom to 12 (zoom: 12). The zoom level 6, selected as a minimum, is approximately the level on which you see the whole of Great Britain. Since spatial signatures cover only GB, there’s no need to zoom further away. Maximum zoom 15 mirrors the maximum zoom of tiles we generated earlier. You would get no tiles if you zoomed closer than that.\nThe map object is ready! There’s nothing there now, but that will change soon.\nAdd a base map It is nice to have some base map in there before adding other layers, just to make sure everything works. You can add a default OpenStreetMap or something more subtle as a CartoDB Positron map.\n// add background basemap var mapBaseLayer = L.tileLayer( 'https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png', { attribution: '(C) OpenStreetMap contributors (C) CARTO' } ).addTo(map); This creates a leaflet tile layer (L.tileLayer) with the URL of CartoDB raster XYZ tiles and attribution of the origin of tiles. Finally, it adds the layer to our map (.addTo(map)). Now you can actually see a real map.\nAdd vector tiles Now for the key part - vector tiles. We need to define quite a few things here.\nURL\nLet’s first set an URL to each tile.\n// get vector tiles URL var mapUrl = \"tiles/{z}/{x}/{y}.pbf\"; Tiles are in the tiles/ folder where tippecanoe dumped them. They are organised into folders, following the XYZ tiling standard. That means that they are organised according to zoom level ({z}) and tile coordinates within each level ({x} and {y}). You then need to specify the URL to tiles with placeholders that will be automatically filled by leaflet.js. Here you save the URL to the variable mapUrl.\nOptions\nAnother variable you may want to specify is a dictionary with options for the tiles.\n// define options of vector tiles var mapVectorTileOptions = { rendererFactory: L.canvas.tile, interactive: true, attribution: '(C) Martin Fleischmann', maxNativeZoom: 15, minZoom: 6, }; The snippet creates a variable (mapVectorTileOptions) and specifies that the tiles should be rendered using leaflet (rendererFactory: L.canvas.tile), they should allow interactivity (interactive: true) as we will need it later, it sets the attribution (attribution: '(C) Martin Fleischmann') and min and max zoom levels.\nVector tile layer\nNow you can define the vector tile layer itself.\nvar mapPbfLayer = new L.VectorGrid.Protobuf( mapUrl, mapVectorTileOptions ) This creates a new variable (mapPbfLayer) to store vector grid protobuf layer (new L.VectorGrid.Protobuf) based on the URL and tile options specified above.\nAdd to map\nFinally, you can add the created layer to the map.\n// add VectorGrid layer to map mapPbfLayer.addTo(map); At this point, you should be able to see your vector tiles on your map with no styles. However, to be able to use it locally, you need to start a server first. An easy way is to do it with Python. In the terminal, navigate to the folder with your html file (something like cd path/to/my_folder) and start the http server:\npython -m http.server 8000 If you now open http://localhost:8000 in your browser, you should be able to open your html file (it will open automatically if it is called index.html) and see your map. It should look like this:\nStyle the tiles The GeoJSON used to create these tiles has a single attribute column called signature_type. What you want to do now is to use this column to style the map to your liking.\nLet’s assume that you know which RGB colours should apply to which signature type code. Let’s save those in a dictionary, so you can use them later.\n// mapping of colors to signature types const cmap = { \"0_0\": \"#f2e6c7\", \"1_0\": \"#8fa37e\", \"3_0\": \"#d7a59f\", \"4_0\": \"#d7ded1\", \"5_0\": \"#c3abaf\", \"6_0\": \"#e4cbc8\", \"7_0\": \"#c2d0d9\", \"8_0\": \"#f0d17d\", \"2_0\": \"#678ea6\", \"2_1\": \"#94666e\", \"2_2\": \"#efc758\", \"9_0\": \"#3b6e8c\", \"9_1\": \"#333432\", \"9_2\": \"#ab888e\", \"9_3\": \"#c1c1c0\", \"9_4\": \"#bc5b4f\", \"9_5\": \"#a7b799\", \"9_6\": \"#c1c1c0\", \"9_7\": \"#c1c1c0\", \"9_8\": \"#c1c1c0\" }; This dictionary is easy left side encodes the signature type code, right side the colour as a HEX code.\nHaving colours, let’s define a new variable with styles and unpack it a bit.\n// define styling of vector tiles var vectorTileStyling = { signatures_4326: function(properties) { return ({ fill: true, fillColor: cmap[properties.signature_type], fillOpacity: 0.9, weight: 1, color: \"#ffffff\", opacity: 1.0, }); } } You need to create a function mapping the styles to geometries based on the signature type property. For layer signatures_4326 (that matches the name of input GeoJSON), you shall define a function that can use the layer properties (function(properties)) and specify that we want to fill each polygon with a colour (fill: true), that the fill colour should use the signature type to retrieve the colour from the dictionary defined above (fillColor: cmap[properties.signature_type]) with the fill opacity 0.8 to see a bit of background through (fillOpacity: 0.9). It also specifies the outline of each polygon as a white line of a weight 1.\nThen you just need to edit the vector tile options (the mapVectorTileOptions dictionary from above) and add tile styling.\n// ... minZoom: 6, vectorTileLayerStyles: vectorTileStyling, // this line is new }; At this point, the basic map is done, and you can try to get it online or style it a bit more (scroll below for that).\nThis is the whole code of the page for reference.\n\u003c!DOCTYPE html\u003e \u003chtml\u003e \u003chead\u003e \u003ctitle\u003eSpatial Signatures in Great Britain\u003c/title\u003e \u003cmeta charset=\"utf-8\" /\u003e \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e \u003clink rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.7.1/dist/leaflet.css\" /\u003e \u003cscript src=\"https://unpkg.com/leaflet@1.7.1/dist/leaflet.js\"\u003e\u003c/script\u003e \u003cscript src=\"https://unpkg.com/leaflet.vectorgrid@1.3.0/dist/Leaflet.VectorGrid.bundled.js\"\u003e\u003c/script\u003e \u003c/head\u003e \u003cbody style='margin:0'\u003e \u003cdiv id=\"map\" style=\"width: 100vw; height: 100vh; background: #fdfdfd\"\u003e\u003c/div\u003e \u003cscript\u003e // create map var map = L.map('map', { center: [53.4107, -2.9704], minZoom: 6, maxZoom: 15, zoomControl: true, zoom: 12, }); // add background basemap var mapBaseLayer = L.tileLayer( 'https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png', { attribution: '(C) OpenStreetMap contributors (C) CARTO' } ).addTo(map); // get vector tiles URL var mapUrl = \"tiles/{z}/{x}/{y}.pbf\"; // mapping of colors to signature types const cmap = { \"0_0\": \"#f2e6c7\", \"1_0\": \"#8fa37e\", \"3_0\": \"#d7a59f\", \"4_0\": \"#d7ded1\", \"5_0\": \"#c3abaf\", \"6_0\": \"#e4cbc8\", \"7_0\": \"#c2d0d9\", \"8_0\": \"#f0d17d\", \"2_0\": \"#678ea6\", \"2_1\": \"#94666e\", \"2_2\": \"#efc758\", \"9_0\": \"#3b6e8c\", \"9_1\": \"#333432\", \"9_2\": \"#ab888e\", \"9_3\": \"#c1c1c0\", \"9_4\": \"#bc5b4f\", \"9_5\": \"#a7b799\", \"9_6\": \"#c1c1c0\", \"9_7\": \"#c1c1c0\", \"9_8\": \"#c1c1c0\" }; // define styling of vector tiles var vectorTileStyling = { signatures_4326: function(properties) { return ({ fill: true, fillColor: cmap[properties.signature_type], fillOpacity: 0.9, weight: 1, color: \"#ffffff\", opacity: 1.0, }); } } // define options of vector tiles var mapVectorTileOptions = { rendererFactory: L.canvas.tile, interactive: true, attribution: '(C) Martin Fleischmann', maxNativeZoom: 15, minZoom: 6, vectorTileLayerStyles: vectorTileStyling, }; // create VectorGrid layer var mapPbfLayer = new L.VectorGrid.Protobuf( mapUrl, mapVectorTileOptions ) // add VectorGrid layer to map mapPbfLayer.addTo(map); \u003c/script\u003e \u003c/body\u003e \u003c/html\u003e Github Pages You can use GitHub Pages to host the whole map online. GitHub has a size limit for individual files of 100MB. Considering that the original GeoJSON has 2.2GB, that may sound like a problem. But remember that the data are now cut to small tiles, where the size of each is a few KB. You want to create a repository on GitHub, upload your tiles/ folder and the HTML file you have just created, called index.html and set up GitHub Pages hosting.\nOnce your data are uploaded, create an empty file called .nojekyll that tells GitHub Pages to use the repository as an HTML code as it is (what it really says is “do not use Jekyll to compile the page”) and go to Settings \u003e Pages and enable GitHub Pages.\nYour web map is live and accessible by anyone online. GitHub Pages settings show you the exact link. It is as easy as that.\nTip: Once you have everything set on GitHub, use github.dev to make the further changes to the HTML file avoid download and indexing of the whole repository (just hit . when you are on GitHub in your repository).\nOur map lives in the urbangrammarai/great-britain repository if you want to check the source code and is available on https://urbangrammarai.xyz/great-britain/ (we use the custom domain on GitHub Pages).\nFurther styling and interactivity You may have noticed that our map has a couple of features on top of this. Let’s quickly go through those.\nLabels on top of the map You can use another XYZ base map that has just labels and load it on top of your tiles to see the names of places (or roads or something else). The order of layers matches the order in which you use .addTo(map).\nAdding CartoDB Positron labels (this need to be after mapPbfLayer.addTo(map):\n// add labels basemap var mapBaseLayer = L.tileLayer( 'https://{s}.basemaps.cartocdn.com/rastertiles/light_only_labels/{z}/{x}/{y}.png', { attribution: '(C) OpenStreetMap contributors (C) CARTO' } ).addTo(map); Popup information You may want to show some additional information when you click on the geometry. Let’s link show the name of the signature type based on its code. First, create a dictionary with the info:\n// mapping of names to signature types to be shown in popup on click const popup_info = { \"0_0\": \"Countryside agriculture\", \"1_0\": \"Accessible suburbia\", \"3_0\": \"Open sprawl\", \"4_0\": \"Wild countryside\", \"5_0\": \"Warehouse/Park land\", \"6_0\": \"Gridded residential quarters\", \"7_0\": \"Urban buffer\", \"8_0\": \"Disconnected suburbia\", \"2_0\": \"Dense residential neighbourhoods\", \"2_1\": \"Connected residential neighbourhoods\", \"2_2\": \"Dense urban neighbourhoods\", \"9_0\": \"Local urbanity\", \"9_1\": \"Concentrated urbanity\", \"9_2\": \"Regional urbanity\", \"9_4\": \"Metropolitan urbanity\", \"9_5\": \"Hyper concentrated urbanity\", }; Then you need to link the on click popup element to the VectorGrid object.\n// create VectorGrid layer var mapPbfLayer = new L.VectorGrid.Protobuf( mapUrl, mapVectorTileOptions ).on('click', function (e) { // this line and below L.popup() .setContent(popup_info[e.layer.properties.signature_type]) .setLatLng(e.latlng) .openOn(map); }); Conditional formatting based on the zoom level The white outline can be a bit think when you zoom out, but there is a way how you can control that. You can just specify the condition to a variable and pass the variable to the tile styling dictionary.\n// define styling of vector tiles var vectorTileStyling = { signatures_4326: function(properties, zoom) { // set line weight conditionally based on zoom var weight = 0; if (zoom \u003e 12) { weight = 1.0; } return ({ fill: true, fillColor: cmap[properties.signature_type], fillOpacity: 0.9, weight: weight, // pass the weight variable instead of a value color: \"#ffffff\", opacity: 1.0, }); } } The function signature has a new zoom attribute you can use in the condition.\nLegend and details A legend and details are just custom HTML objects detached from the leaflet map. You can check the source code to see how they’re done.\n",
+  "wordCount" : "2776",
+  "inLanguage": "en",
+  "datePublished": "2022-09-29T00:00:00Z",
+  "dateModified": "2022-09-29T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://iamlaksh1.github.io/crops-n-leaves/posts/aws-s3/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Lakshmanan Venkatesan",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://iamlaksh1.github.io/crops-n-leaves/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://iamlaksh1.github.io/crops-n-leaves/" accesskey="h" title="Lakshmanan Venkatesan (Alt + H)">Lakshmanan Venkatesan</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://iamlaksh1.github.io/crops-n-leaves/bio/" title="About me">
+                    <span>About me</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://iamlaksh1.github.io/crops-n-leaves/posts/" title="Posts">
+                    <span>Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/iamlaksh1" title="GitHub">
+                    <span>GitHub</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      How to create a vector-based web map hosted on GitHub
+    </h1>
+    <div class="post-meta"><span title='2022-09-29 00:00:00 +0000 UTC'>September 29, 2022</span>&nbsp;·&nbsp;14 min
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#vector-tiles" aria-label="Vector tiles">Vector tiles</a><ul>
+                        
+                <li>
+                    <a href="#zoom-levels" aria-label="Zoom levels">Zoom levels</a></li>
+                <li>
+                    <a href="#tile-format-and-compression" aria-label="Tile format and compression">Tile format and compression</a></li>
+                <li>
+                    <a href="#generate-tiles" aria-label="Generate tiles">Generate tiles</a></li></ul>
+                </li>
+                <li>
+                    <a href="#leafletjs-map" aria-label="Leaflet.js map">Leaflet.js map</a><ul>
+                        
+                <li>
+                    <a href="#load-leafletjs" aria-label="Load leaflet.js">Load leaflet.js</a></li>
+                <li>
+                    <a href="#create-the-map" aria-label="Create the map">Create the map</a></li>
+                <li>
+                    <a href="#add-a-base-map" aria-label="Add a base map">Add a base map</a></li>
+                <li>
+                    <a href="#add-vector-tiles" aria-label="Add vector tiles">Add vector tiles</a></li>
+                <li>
+                    <a href="#style-the-tiles" aria-label="Style the tiles">Style the tiles</a></li></ul>
+                </li>
+                <li>
+                    <a href="#github-pages" aria-label="Github Pages">Github Pages</a></li>
+                <li>
+                    <a href="#further-styling-and-interactivity" aria-label="Further styling and interactivity">Further styling and interactivity</a><ul>
+                        
+                <li>
+                    <a href="#httpsgithubcomurbangrammaraispatial_signatures_conceptlabels-on-top-of-the-maplabels-on-top-of-the-map" aria-label="Labels on top of the map"><a href="https://github.com/urbangrammarai/spatial_signatures_concept#labels-on-top-of-the-map"></a>Labels on top of the map</a></li>
+                <li>
+                    <a href="#popup-information" aria-label="Popup information">Popup information</a></li>
+                <li>
+                    <a href="#conditional-formatting-based-on-the-zoom-level" aria-label="Conditional formatting based on the zoom level">Conditional formatting based on the zoom level</a></li>
+                <li>
+                    <a href="#legend-and-details" aria-label="Legend and details">Legend and details</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><iframe src="https://urbangrammarai.xyz/great-britain/" width="100%" height="500" frameBorder="0"></iframe>
+<p>This is the map we have created for the <a href="https://urbangrammarai.xyz">Urban Grammar AI project</a>. It is created using open source software stack and hosted on GitHub, for free.</p>
+<p>This post will walk you through the whole process of generation of the map, step by step, so you can create your own. It is a bit longer than usual, so a quick outline for better orientation:</p>
+<p>By the end of this tutorial, you will be able to take your vector data and turn them into a fully-fledged vector map hosted on GitHub with no cost involved, for everyone to enjoy.</p>
+<h2 id="vector-tiles">Vector tiles<a hidden class="anchor" aria-hidden="true" href="#vector-tiles">#</a></h2>
+<p>Web maps are (usually) based on tiles. That means that every dataset is turned into a large set of tiny squares representing small portions of the map. And if you want to zoom in and out, you need those tiles for every zoom level. So the first step in our process will be the creation of vector tiles.</p>
+<p>The easiest option is to use <code>tippecanoe</code>, a tool created by Mapbox that allows you to create vector tiles from any GeoJSON input. You should export only the columns you need and make sure that the geometry is in EPSG:4326 projection (lat/long) - that is what <code>tippecanoe</code> expects. Something like this will do if you have your data in <code>geopandas.GeoDataFrame</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span>gdf[[<span style="color:#e6db74">&#34;signature_type&#34;</span>, <span style="color:#e6db74">&#34;geometry&#34;</span>]]<span style="color:#f92672">.</span>to_crs(<span style="color:#ae81ff">4326</span>)<span style="color:#f92672">.</span>to_file(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;signatures_4326.geojson&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>Now you have a <code>signatures_4326.geojson</code> with geometry and a column encoding the signature type. It means that it is time to use <code>tippecanoe</code> (check the <a href="https://github.com/mapbox/tippecanoe#installation">installation instructions</a>).</p>
+<p><code>tippecanoe</code> is a command-line tool, so fire up your favourite terminal, or use it within a Jupyter notebook (as <a href="https://urbangrammarai.xyz/spatial_signatures/data_product/vector_tile.html">we did</a>). There are some options to set but let&rsquo;s talk about the most important ones (you can check the rest in the <a href="https://github.com/mapbox/tippecanoe#usage">documentation</a>).</p>
+<h3 id="zoom-levels">Zoom levels<a hidden class="anchor" aria-hidden="true" href="#zoom-levels">#</a></h3>
+<p>Every map has a range of zoom levels at which the shown data is meaningful. If you&rsquo;re comparing states, you don&rsquo;t need to zoom to a level of a street, and if you&rsquo;re showing building-level data, you don&rsquo;t need a zoom to see the whole continent.</p>
+<p>Zoom level 0 means you are zoomed out to see the whole world. It is a single tile. Zoom level 1 is a bit closer and is split into 4 tiles. Zoom level 2 has 16 tiles, level 3 has 64 and so on. Zoom level 16, which shows a street-level detail, consists of 4 294 967 296 tiles if you want to create them for the whole world. That is a lot of data, so you need to be mindful of which detail you actually need because the difference between zooming up to level 15 and up to level 16 is huge. OpenStreetMap has a <a href="https://wiki.openstreetmap.org/wiki/Zoom_levels">nice guide on zoom levels</a> if you are interested in more details.</p>
+<p>For the signature geometry that represents neighbourhood-level classification, level 15 feels like the reasonable maximum, so you have the first option - <code>-z15</code>.</p>
+<h3 id="tile-format-and-compression">Tile format and compression<a hidden class="anchor" aria-hidden="true" href="#tile-format-and-compression">#</a></h3>
+<p>In later steps, you will use the <code>Leaflet.VectorGrid</code> plugin to load the tiles. To make that work, you need them as uncompressed protobuf files (not Mapbox vector tiles), which gives you another two options - <code>-no-tile-compression</code> to control the compression and <code>--output-to-directory</code> telling <code>tippecanoe</code> to use directories, instead of <code>mbtiles</code>.</p>
+<p>We have <a href="https://urbangrammarai.xyz/spatial_signatures/data_product/vector_tile.html#generate-tiles">used</a> a few more options, but you may not need those.</p>
+<h3 id="generate-tiles">Generate tiles<a hidden class="anchor" aria-hidden="true" href="#generate-tiles">#</a></h3>
+<p>You have all you need to create the tiles:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>tippecanoe -z15 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>           --no-tile-compression <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>           --output-to-directory<span style="color:#f92672">=</span>tiles/ <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>           signatures_4326.geojson
+</span></span></code></pre></div><p>The command above sets the maximum zoom to 15 so you don&rsquo;t create overly detailed tiles (<code>z15</code>), disables tile compression (<code>--no-tile-compression</code>) and saves the result to the <code>tiles/</code> directory (<code>--output-to-directory=tiles/</code>), based on your GeoJSON file (<code>signatures_4326.geojson</code>).</p>
+<p>This step may take a bit of time, but once it is done, you will see thousands of files in the <code>tiles/</code> folder. It is time to show them on a map.</p>
+<h2 id="leafletjs-map">Leaflet.js map<a hidden class="anchor" aria-hidden="true" href="#leafletjs-map">#</a></h2>
+<p>One of the best tools for interactive maps is a <code>leaflet.js</code>, an open-source JavaScript library. With the right plugins, it is an ideal tool for almost any web map.</p>
+<p>The whole map and a JavaScript code will be served from a single HTML file. Let&rsquo;s start with some basic structure, with comments as a placeholder you will fill later:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!DOCTYPE html&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">html</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">head</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">title</span>&gt;Spatial Signatures in Great Britain&lt;/<span style="color:#f92672">title</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">charset</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;viewport&#34;</span> <span style="color:#a6e22e">content</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;width=device-width, initial-scale=1.0&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!-- load leaflet.js --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">head</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">body</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;margin:0&#39;</span>&gt;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!-- div containing map --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!-- specification of leaflet map --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
+</span></span></code></pre></div><h3 id="load-leafletjs">Load leaflet.js<a hidden class="anchor" aria-hidden="true" href="#load-leafletjs">#</a></h3>
+<p>To load the <code>leaflet.js</code>, you need to get its source script and CSS styles. Both are usually fetched over the web. You can then replace <code>&lt;!-- load leaflet.js --&gt;</code> with the following snippet:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- load leaflet.js --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- load CSS --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">link</span> <span style="color:#a6e22e">rel</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;stylesheet&#34;</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://unpkg.com/leaflet@1.7.1/dist/leaflet.css&#34;</span>/&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- load JS --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://unpkg.com/leaflet@1.7.1/dist/leaflet.js&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>However, the basic <code>leaflet.js</code> is not able to work with vector tiles, so you need to load a <code>Leaflet.VectorGrid</code> extension on top. Just add this to the snippet:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- load VectorGrid extension --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://unpkg.com/leaflet.vectorgrid@1.3.0/dist/Leaflet.VectorGrid.bundled.js&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>At this moment, you have everything you need to create the map in your file.<a href="https://github.com/urbangrammarai/spatial_signatures_concept#create-the-map"></a></p>
+<h3 id="create-the-map">Create the map<a hidden class="anchor" aria-hidden="true" href="#create-the-map">#</a></h3>
+<p>You need two things - a <code>div</code> object where the map will live and a bit of JavaScript specifying what the map should do. The former is easy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- div containing map --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;map&#34;</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;width: 100vw; height: 100vh; background: #fdfdfd&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span></code></pre></div><p>This div is empty, but the important bit is <code>id=&quot;map&quot;</code>, which will link it to the JavaScript. It also has some basic styles ensuring that it covers the whole screen (<code>width: 100vw; height: 100vh;</code>) and has an almost-white background (<code>background: #fdfdfd</code>).</p>
+<p>The second part is the actual JavaScript generating the map.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// create map
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">map</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">map</span>(<span style="color:#e6db74">&#39;map&#39;</span>, {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">center</span><span style="color:#f92672">:</span> [<span style="color:#ae81ff">53.4107</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">2.9704</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">minZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">maxZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">15</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">zoomControl</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">zoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">12</span>,
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// other map specifications
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>Let&rsquo;s unpack this. This creates a variable called <code>map</code> (<code>var map</code>), which is a leaflet map object (<code>L.map</code>). The object is linked to the HTML element (in this case <code>div</code>) with the id <code>map</code> you created above (&ldquo;map&rdquo;). It also has a dictionary with some basic specification, that is setting the centre of the map to Liverpool (<code>center: [53.4107, -2.9704]</code> where the numbers are latitude and longitude), limiting zoom levels to 6-15 (<code>minZoom: 6</code> and <code>maxZoom: 15</code>), turning on zoom control (+- buttons) (<code>zoomControl: true</code>) and setting the default zoom to 12 (<code>zoom: 12</code>). The zoom level 6, selected as a minimum, is approximately the level on which you see the whole of Great Britain. Since spatial signatures cover only GB, there&rsquo;s no need to zoom further away. Maximum zoom 15 mirrors the maximum zoom of tiles we generated earlier. You would get no tiles if you zoomed closer than that.</p>
+<p>The map object is ready! There&rsquo;s nothing there now, but that will change soon.</p>
+<h3 id="add-a-base-map">Add a base map<a hidden class="anchor" aria-hidden="true" href="#add-a-base-map">#</a></h3>
+<p>It is nice to have some base map in there before adding other layers, just to make sure everything works. You can add a default OpenStreetMap or something more subtle as a CartoDB Positron map.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// add background basemap
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapBaseLayer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">tileLayer</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png&#39;</span>, {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">attribution</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;(C) OpenStreetMap contributors (C) CARTO&#39;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>).<span style="color:#a6e22e">addTo</span>(<span style="color:#a6e22e">map</span>);
+</span></span></code></pre></div><p>This creates a leaflet tile layer (<code>L.tileLayer</code>) with the URL of CartoDB raster XYZ tiles and attribution of the origin of tiles. Finally, it adds the layer to our map (<code>.addTo(map)</code>). Now you can actually see a real map.</p>
+<h3 id="add-vector-tiles">Add vector tiles<a hidden class="anchor" aria-hidden="true" href="#add-vector-tiles">#</a></h3>
+<p>Now for the key part - vector tiles. We need to define quite a few things here.</p>
+<p><strong>URL</strong></p>
+<p>Let&rsquo;s first set an URL to each tile.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// get vector tiles URL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapUrl</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;tiles/{z}/{x}/{y}.pbf&#34;</span>;
+</span></span></code></pre></div><p>Tiles are in the <code>tiles/</code> folder where <code>tippecanoe</code> dumped them. They are organised into folders, following the XYZ tiling standard. That means that they are organised according to zoom level (<code>{z}</code>) and tile coordinates within each level (<code>{x}</code> and <code>{y}</code>). You then need to specify the URL to tiles with placeholders that will be automatically filled by <code>leaflet.js</code>. Here you save the URL to the variable <code>mapUrl</code>.</p>
+<p><strong>Options</strong></p>
+<p>Another variable you may want to specify is a dictionary with options for the tiles.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// define options of vector tiles
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapVectorTileOptions</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">rendererFactory</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">canvas</span>.<span style="color:#a6e22e">tile</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">interactive</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">attribution</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;(C) Martin Fleischmann&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">maxNativeZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">15</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">minZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>The snippet creates a variable (<code>mapVectorTileOptions</code>) and specifies that the tiles should be rendered using leaflet (<code>rendererFactory: L.canvas.tile</code>), they should allow interactivity (<code>interactive: true</code>) as we will need it later, it sets the attribution (<code>attribution: '(C) Martin Fleischmann'</code>) and min and max zoom levels.</p>
+<p><strong>Vector tile layer</strong></p>
+<p>Now you can define the vector tile layer itself.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapPbfLayer</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">VectorGrid</span>.<span style="color:#a6e22e">Protobuf</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mapUrl</span>, <span style="color:#a6e22e">mapVectorTileOptions</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>This creates a new variable (<code>mapPbfLayer</code>) to store vector grid protobuf layer (<code>new L.VectorGrid.Protobuf</code>) based on the URL and tile options specified above.</p>
+<p><strong>Add to map</strong></p>
+<p>Finally, you can add the created layer to the map.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// add VectorGrid layer to map
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">mapPbfLayer</span>.<span style="color:#a6e22e">addTo</span>(<span style="color:#a6e22e">map</span>);
+</span></span></code></pre></div><p>At this point, you should be able to see your vector tiles on your map with no styles. However, to be able to use it locally, you need to start a server first. An easy way is to do it with Python. In the terminal, navigate to the folder with your html file (something like <code>cd path/to/my_folder</code>) and start the http server:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>python -m http.server <span style="color:#ae81ff">8000</span>
+</span></span></code></pre></div><p>If you now open <a href="http://localhost:8000/">http://localhost:8000</a> in your browser, you should be able to open your html file (it will open automatically if it is called <code>index.html</code>) and see your map. It should look like this:</p>
+<p><img loading="lazy" src="../posts/images/Screenshot_2021-10-07_at_19.22.44.png" alt=""  />
+</p>
+<h3 id="style-the-tiles">Style the tiles<a hidden class="anchor" aria-hidden="true" href="#style-the-tiles">#</a></h3>
+<p>The GeoJSON used to create these tiles has a single attribute column called <code>signature_type</code>. What you want to do now is to use this column to style the map to your liking.</p>
+<p>Let&rsquo;s assume that you know which RGB colours should apply to which signature type code. Let&rsquo;s save those in a dictionary, so you can use them later.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// mapping of colors to signature types
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cmap</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;0_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#f2e6c7&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;1_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#8fa37e&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;3_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#d7a59f&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;4_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#d7ded1&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;5_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c3abaf&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;6_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#e4cbc8&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;7_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c2d0d9&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;8_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#f0d17d&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#678ea6&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2_1&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#94666e&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2_2&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#efc758&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#3b6e8c&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_1&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#333432&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_2&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#ab888e&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_3&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c1c1c0&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_4&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#bc5b4f&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_5&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#a7b799&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_6&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c1c1c0&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_7&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c1c1c0&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_8&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c1c1c0&#34;</span>
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>This dictionary is easy left side encodes the signature type code, right side the colour as a HEX code.</p>
+<p>Having colours, let&rsquo;s define a new variable with styles and unpack it a bit.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// define styling of vector tiles
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">vectorTileStyling</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">signatures_4326</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">properties</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ({
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fill</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fillColor</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">cmap</span>[<span style="color:#a6e22e">properties</span>.<span style="color:#a6e22e">signature_type</span>],
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fillOpacity</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0.9</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">weight</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">color</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">opacity</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1.0</span>,
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>You need to create a function mapping the styles to geometries based on the signature type property. For layer <code>signatures_4326</code> (that matches the name of input GeoJSON), you shall define a function that can use the layer properties (<code>function(properties)</code>) and specify that we want to fill each polygon with a colour (<code>fill: true</code>), that the fill colour should use the signature type to retrieve the colour from the dictionary defined above (<code>fillColor: cmap[properties.signature_type]</code>) with the fill opacity 0.8 to see a bit of background through (<code>fillOpacity: 0.9</code>). It also specifies the outline of each polygon as a white line of a weight 1.</p>
+<p>Then you just need to edit the vector tile options (the <code>mapVectorTileOptions</code> dictionary from above) and add tile styling.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>        <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">minZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">vectorTileLayerStyles</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">vectorTileStyling</span>,  <span style="color:#75715e">// this line is new
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>};
+</span></span></code></pre></div><p>At this point, the basic map is done, and you can try to get it online or style it a bit more (scroll below for that).</p>
+<p><img loading="lazy" src="../posts/images/Screenshot_2021-10-07_at_19.42.40.png" alt=""  />
+</p>
+<p>This is the whole code of the page for reference.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!DOCTYPE html&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">html</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">head</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">title</span>&gt;Spatial Signatures in Great Britain&lt;/<span style="color:#f92672">title</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">charset</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;viewport&#34;</span> <span style="color:#a6e22e">content</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;width=device-width, initial-scale=1.0&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- load leaflet.js --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- load CSS --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">link</span> <span style="color:#a6e22e">rel</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;stylesheet&#34;</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://unpkg.com/leaflet@1.7.1/dist/leaflet.css&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- load JS --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://unpkg.com/leaflet@1.7.1/dist/leaflet.js&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- load VectorGrid extension --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://unpkg.com/leaflet.vectorgrid@1.3.0/dist/Leaflet.VectorGrid.bundled.js&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">head</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">body</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;margin:0&#39;</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- div containing map --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;map&#34;</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;width: 100vw; height: 100vh; background: #fdfdfd&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- specification of leaflet map --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// create map
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">map</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">map</span>(<span style="color:#e6db74">&#39;map&#39;</span>, {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">center</span><span style="color:#f92672">:</span> [<span style="color:#ae81ff">53.4107</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">2.9704</span>],
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">minZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">maxZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">15</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">zoomControl</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">zoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">12</span>,
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// add background basemap
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapBaseLayer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">tileLayer</span>(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png&#39;</span>, {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">attribution</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;(C) OpenStreetMap contributors (C) CARTO&#39;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        ).<span style="color:#a6e22e">addTo</span>(<span style="color:#a6e22e">map</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// get vector tiles URL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapUrl</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;tiles/{z}/{x}/{y}.pbf&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// mapping of colors to signature types
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cmap</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;0_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#f2e6c7&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;1_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#8fa37e&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;3_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#d7a59f&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;4_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#d7ded1&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;5_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c3abaf&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;6_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#e4cbc8&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;7_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c2d0d9&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;8_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#f0d17d&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;2_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#678ea6&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;2_1&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#94666e&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;2_2&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#efc758&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#3b6e8c&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_1&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#333432&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_2&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#ab888e&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_3&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c1c1c0&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_4&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#bc5b4f&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_5&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#a7b799&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_6&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c1c1c0&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_7&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c1c1c0&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;9_8&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#c1c1c0&#34;</span>
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// define styling of vector tiles
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">vectorTileStyling</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">signatures_4326</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">properties</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> ({
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">fill</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">fillColor</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">cmap</span>[<span style="color:#a6e22e">properties</span>.<span style="color:#a6e22e">signature_type</span>],
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">fillOpacity</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0.9</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">weight</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">color</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">opacity</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1.0</span>,
+</span></span><span style="display:flex;"><span>                });
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// define options of vector tiles
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapVectorTileOptions</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">rendererFactory</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">canvas</span>.<span style="color:#a6e22e">tile</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">interactive</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">attribution</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;(C) Martin Fleischmann&#39;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">maxNativeZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">15</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">minZoom</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">vectorTileLayerStyles</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">vectorTileStyling</span>,
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// create VectorGrid layer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapPbfLayer</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">VectorGrid</span>.<span style="color:#a6e22e">Protobuf</span>(
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">mapUrl</span>, <span style="color:#a6e22e">mapVectorTileOptions</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// add VectorGrid layer to map
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">mapPbfLayer</span>.<span style="color:#a6e22e">addTo</span>(<span style="color:#a6e22e">map</span>);
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
+</span></span></code></pre></div><h2 id="github-pages">Github Pages<a hidden class="anchor" aria-hidden="true" href="#github-pages">#</a></h2>
+<p>You can use GitHub Pages to host the whole map online. GitHub has a size limit for individual files of 100MB. Considering that the original GeoJSON has 2.2GB, that may sound like a problem. But remember that the data are now cut to small tiles, where the size of each is a few KB. You want to create a repository on GitHub, upload your <code>tiles/</code> folder and the HTML file you have just created, called <code>index.html</code> and set up GitHub Pages hosting.</p>
+<p>Once your data are uploaded, create an empty file called <code>.nojekyll</code> that tells GitHub Pages to use the repository as an HTML code as it is (what it really says is &ldquo;do not use Jekyll to compile the page&rdquo;) and go to Settings &gt; Pages and enable GitHub Pages.</p>
+<p>Your web map is live and accessible by anyone online. GitHub Pages settings show you the exact link. It is as easy as that.</p>
+<blockquote>
+<p>Tip: Once you have everything set on GitHub, use <a href="http://github.dev/">github.dev</a> to make the further changes to the HTML file avoid download and indexing of the whole repository (just hit <code>.</code> when you are on GitHub in your repository).</p>
+</blockquote>
+<p>Our map lives in the <a href="https://github.com/urbangrammarai/great-britain">urbangrammarai/great-britain</a> repository if you want to check the source code and is available on <a href="https://urbangrammarai.xyz/great-britain/">https://urbangrammarai.xyz/great-britain/</a> (we use the custom domain on GitHub Pages).</p>
+<h2 id="further-styling-and-interactivity">Further styling and interactivity<a hidden class="anchor" aria-hidden="true" href="#further-styling-and-interactivity">#</a></h2>
+<p>You may have noticed that our map has a couple of features on top of this. Let&rsquo;s quickly go through those.</p>
+<h3 id="httpsgithubcomurbangrammaraispatial_signatures_conceptlabels-on-top-of-the-maplabels-on-top-of-the-map"><a href="https://github.com/urbangrammarai/spatial_signatures_concept#labels-on-top-of-the-map"></a>Labels on top of the map<a hidden class="anchor" aria-hidden="true" href="#httpsgithubcomurbangrammaraispatial_signatures_conceptlabels-on-top-of-the-maplabels-on-top-of-the-map">#</a></h3>
+<p>You can use another XYZ base map that has just labels and load it on top of your tiles to see the names of places (or roads or something else). The order of layers matches the order in which you use <code>.addTo(map)</code>.</p>
+<p>Adding CartoDB Positron labels (this need to be after <code>mapPbfLayer.addTo(map)</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// add labels basemap
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapBaseLayer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">tileLayer</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;https://{s}.basemaps.cartocdn.com/rastertiles/light_only_labels/{z}/{x}/{y}.png&#39;</span>, {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">attribution</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;(C) OpenStreetMap contributors (C) CARTO&#39;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>).<span style="color:#a6e22e">addTo</span>(<span style="color:#a6e22e">map</span>);
+</span></span></code></pre></div><h3 id="popup-information">Popup information<a hidden class="anchor" aria-hidden="true" href="#popup-information">#</a></h3>
+<p>You may want to show some additional information when you click on the geometry. Let&rsquo;s link show the name of the signature type based on its code. First, create a dictionary with the info:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// mapping of names to signature types to be shown in popup on click
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">popup_info</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;0_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Countryside agriculture&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;1_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Accessible suburbia&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;3_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Open sprawl&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;4_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Wild countryside&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;5_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Warehouse/Park land&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;6_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Gridded residential quarters&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;7_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Urban buffer&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;8_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Disconnected suburbia&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Dense residential neighbourhoods&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2_1&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Connected residential neighbourhoods&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2_2&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Dense urban neighbourhoods&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_0&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Local urbanity&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_1&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Concentrated urbanity&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_2&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Regional urbanity&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_4&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Metropolitan urbanity&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;9_5&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Hyper concentrated urbanity&#34;</span>,
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>Then you need to link the on click popup element to the VectorGrid object.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// create VectorGrid layer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mapPbfLayer</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">VectorGrid</span>.<span style="color:#a6e22e">Protobuf</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mapUrl</span>, <span style="color:#a6e22e">mapVectorTileOptions</span>
+</span></span><span style="display:flex;"><span>).<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;click&#39;</span>, <span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">e</span>) { <span style="color:#75715e">// this line and below
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">popup</span>()
+</span></span><span style="display:flex;"><span>        .<span style="color:#a6e22e">setContent</span>(<span style="color:#a6e22e">popup_info</span>[<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">layer</span>.<span style="color:#a6e22e">properties</span>.<span style="color:#a6e22e">signature_type</span>])
+</span></span><span style="display:flex;"><span>        .<span style="color:#a6e22e">setLatLng</span>(<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">latlng</span>)
+</span></span><span style="display:flex;"><span>        .<span style="color:#a6e22e">openOn</span>(<span style="color:#a6e22e">map</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><h3 id="conditional-formatting-based-on-the-zoom-level">Conditional formatting based on the zoom level<a hidden class="anchor" aria-hidden="true" href="#conditional-formatting-based-on-the-zoom-level">#</a></h3>
+<p>The white outline can be a bit think when you zoom out, but there is a way how you can control that. You can just specify the condition to a variable and pass the variable to the tile styling dictionary.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// define styling of vector tiles
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">vectorTileStyling</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">signatures_4326</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">properties</span>, <span style="color:#a6e22e">zoom</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// set line weight conditionally based on zoom
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">weight</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">zoom</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">12</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">weight</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.0</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ({
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fill</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fillColor</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">cmap</span>[<span style="color:#a6e22e">properties</span>.<span style="color:#a6e22e">signature_type</span>],
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fillOpacity</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0.9</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">weight</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">weight</span>, <span style="color:#75715e">// pass the weight variable instead of a value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">color</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">opacity</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1.0</span>,
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The function signature has a new <code>zoom</code> attribute you can use in the condition.</p>
+<h3 id="legend-and-details">Legend and details<a hidden class="anchor" aria-hidden="true" href="#legend-and-details">#</a></h3>
+<p>A legend and details are just custom HTML objects detached from the leaflet map. You can check the <a href="https://github.com/urbangrammarai/great-britain/blob/master/index.html">source code</a> to see how they&rsquo;re done.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://iamlaksh1.github.io/crops-n-leaves/tags/data/">data</a></li>
+      <li><a href="https://iamlaksh1.github.io/crops-n-leaves/tags/geography/">geography</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2023 <a href="https://iamlaksh1.github.io/crops-n-leaves/">Lakshmanan Venkatesan</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

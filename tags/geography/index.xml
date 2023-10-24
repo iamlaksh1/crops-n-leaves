@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>geography on Lakshmanan Venkatesan</title>
+    <link>https://iamlaksh1.github.io/crops-n-leaves/tags/geography/</link>
+    <description>Recent content in geography on Lakshmanan Venkatesan</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 29 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://iamlaksh1.github.io/crops-n-leaves/tags/geography/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to create a vector-based web map hosted on GitHub</title>
+      <link>https://iamlaksh1.github.io/crops-n-leaves/posts/aws-s3/</link>
+      <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://iamlaksh1.github.io/crops-n-leaves/posts/aws-s3/</guid>
+      <description>This is the map we have created for the Urban Grammar AI project. It is created using open source software stack and hosted on GitHub, for free.
+This post will walk you through the whole process of generation of the map, step by step, so you can create your own. It is a bit longer than usual, so a quick outline for better orientation:
+By the end of this tutorial, you will be able to take your vector data and turn them into a fully-fledged vector map hosted on GitHub with no cost involved, for everyone to enjoy.</description>
+    </item>
+    
+  </channel>
+</rss>
